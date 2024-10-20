@@ -1,22 +1,19 @@
-from pytube import YouTube
+from bs4 import BeautifulSoup  # Correct import
+import requests  # For making HTTP requests
 
-def downloadLink(link):
-    try:
-        yt = YouTube(link)
-        yt._js = None  # Clear any cached JS if needed
+# Request the webpage
+url = "https://edition.cnn.com/travel/article/scenic-airport-landings-2020/index.html"
+response = requests.get(url)
 
-        # Use alternative stream selection
-        stream = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+# Parse the HTML content with BeautifulSoup
+soup = BeautifulSoup(response.text, "html.parser")
 
-        if stream:
-            print("Downloading...")
-            stream.download()
-            print("Download completed successfully!")
-        else:
-            print("No suitable stream found.")
+# Find all <p> tags with the class 'text'
+paragraphs = soup.find_all("p", attrs={"class": "paragraph"})
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+# Print the text from each paragraph
+for p in paragraphs:
+    print(p)
+    
+    
 
-link = input("Enter the YouTube video URL: ")
-downloadLink(link)
